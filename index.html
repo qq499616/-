@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>品牌十二人格测试</title>
+    <script src="https://cdn.tailwindcss.com/3.3.3"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-yellow: #ffde59;
+            --primary-green: #08e0bf;
+            --deep-yellow: #ffc800;
+            --deep-green: #00b894;
+            --light-yellow: #fff5cc;
+            --light-green: #e0f7fa;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, var(--light-yellow) 0%, var(--light-green) 100%);
+            color: #2d3748;
+        }
+        
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary-yellow) 0%, var(--primary-green) 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .scale-option {
+            transition: all 0.2s ease;
+        }
+        
+        .scale-option:hover {
+            transform: scale(1.05);
+            background-color: rgba(255, 222, 89, 0.15);
+        }
+        
+        .scale-option.selected {
+            background-color: rgba(8, 224, 191, 0.2);
+            border: 2px solid var(--primary-green);
+        }
+        
+        .highlight-text {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .highlight-text::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background-color: rgba(255, 222, 89, 0.3);
+            z-index: -1;
+        }
+        
+        .personality-card {
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .personality-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-yellow) 0%, var(--primary-green) 100%);
+            color: #333;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--deep-yellow) 0%, var(--deep-green) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 1);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+        
+        .stage-indicator {
+            background: linear-gradient(135deg, var(--primary-yellow) 0%, var(--primary-green) 100%);
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .header-gradient {
+            background: linear-gradient(90deg, var(--primary-yellow) 0%, var(--primary-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .border-gradient {
+            position: relative;
+        }
+        
+        .border-gradient::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary-yellow) 0%, var(--primary-green) 100%);
+            z-index: -1;
+        }
+        
+        .option-selected {
+            background-color: rgba(8, 224, 191, 0.1);
+            border: 2px solid var(--primary-green);
+        }
+        
+        .option-unselected {
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .medal-gold {
+            color: #ffc107;
+        }
+        
+        .medal-silver {
+            color: #c0c0c0;
+        }
+        
+        .medal-bronze {
+            color: #cd7f32;
+        }
+        
+        .personality-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
+            background: linear-gradient(135deg, var(--primary-yellow) 0%, var(--primary-green) 100%);
+            color: #333;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <!-- 测试标题和进度 -->
+        <div class="glassmorphism p-6 mb-8 border-gradient">
+            <div class="text-center mb-4">
+                <h1 class="text-2xl font-bold text-black">禄林好汉品牌营销人格测试定位</h1>
+                <p class="font-serif text-sm mt-1">Followin's Brand Marketing Personality Test Positioning</p>
+                <h1 class="text-3xl font-bold text-center mb-4 header-gradient">品牌十二人格测试</h1>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-600">测试进度</span>
+                    <span id="progressText" class="text-sm font-medium text-green-700">0/30</span>
+                </div>
+
+            </div>
+            <div class="w-full bg-gray-100 rounded-full h-2.5">
+                <div id="progressBar" class="progress-bar h-2.5 rounded-full" style="width: 0%">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 测试阶段指示器 -->
+        <div id="stageIndicator" class="glassmorphism p-4 mb-8 text-center">
+            <div class="stage-indicator inline-flex items-center px-4 py-2 rounded-full">
+                <span id="currentStage">此测试体系通过场景化问题、多维验证及战略落地建议，将抽象的人格理论转化为可操作的分析工具<br>无论是个人职业规划还是企业品牌战略需求，均可通过此测试提升决策精准度，从而实现商业价值最大化</span>
+            </div>
+        </div>
+        
+        <!-- 题目展示区域 -->
+        <div id="questionContainer" class="glassmorphism p-8 mb-8">
+            <div id="welcomeScreen" class="text-center">
+                <div class="flex justify-center mb-6">
+                    <div class="personality-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">欢迎参加品牌十二人格测试</h2>
+                <p class="text-gray-600 mb-6">本测试包含30个问题，分为两个阶段：</p>
+                <ul class="text-left mb-8 space-y-2 max-w-md mx-auto">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                        <span>阶段1：20道场景选择题</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                        <span>阶段2：10道李克特量表题</span>
+                    </li>
+                </ul>
+                <button id="startTestBtn" class="btn-primary px-6 py-3 font-medium rounded-lg shadow-md">
+                    开始测试 <i class="fas fa-play ml-2"></i>
+                </button>
+            </div>
+            
+            <!-- 场景选择题模板 -->
+            <div id="scenarioQuestion" class="hidden">
+                <h3 id="scenarioQuestionText" class="text-xl font-semibold mb-6 text-gray-800"></h3>
+                <div id="scenarioOptions" class="space-y-4"></div>
+                <div id="scenarioAnalysis" class="mt-6 p-4 bg-yellow-50 rounded-lg hidden">
+                    <h4 class="font-semibold text-gray-700 mb-2 flex items-center">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                        <span>答案解析：</span>
+                    </h4>
+                    <p id="analysisText" class="text-sm text-gray-600"></p>
+                </div>
+            </div>
+            
+            <!-- 李克特量表题模板 -->
+            <div id="likertQuestion" class="hidden">
+                <h3 id="likertQuestionText" class="text-xl font-semibold mb-6 text-gray-800"></h3>
+                <div class="mb-4">
+                    <div class="flex justify-between text-sm text-gray-500 mb-2">
+                        <span>完全不符合</span>
+                        <span>完全符合</span>
+                    </div>
+                    <div id="likertOptions" class="grid grid-cols-5 gap-2"></div>
+                </div>
+                <div id="likertDimension" class="text-sm text-gray-600 mb-4 p-2 bg-green-50 rounded-md"></div>
+                <div id="likertScoreAnalysis" class="text-sm bg-yellow-50 p-3 rounded-lg hidden">
+                    <h4 class="font-semibold text-gray-700 mb-1 flex items-center">
+                        <i class="fas fa-chart-bar text-green-500 mr-2"></i>
+                        <span>分数段解析：</span>
+                    </h4>
+                    <p id="scoreAnalysisText" class="text-gray-600"></p>
+                </div>
+            </div>
+            
+            <!-- 结果展示区域 -->
+            <div id="resultContainer" class="hidden">
+                <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">您的品牌人格测试结果</h2>
+                
+                <!-- 主导人格TOP3 -->
+                <div class="glassmorphism p-6 mb-8">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-crown text-yellow-500 mr-2"></i>
+                        <span>主导人格TOP3（选择题部分）</span>
+                    </h3>
+                    <div id="topPersonalities" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+                </div>
+                
+                <!-- 量表高分人格TOP3 -->
+                <div class="glassmorphism p-6 mb-8">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-star text-green-500 mr-2"></i>
+                        <span>量表高分人格TOP3</span>
+                    </h3>
+                    <div id="topScalePersonalities" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+                </div>
+                
+                <!-- 主要人格详细卡片 -->
+                <div class="glassmorphism p-6 mb-8">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-id-card text-gray-700 mr-2"></i>
+                        <span>您的主要人格</span>
+                    </h3>
+                    <div id="primaryPersonalityCard" class="personality-card bg-white p-6 rounded-lg shadow-sm mb-6"></div>
+                    
+                    <h4 class="text-lg font-semibold mb-3 text-gray-700">量表补充描述</h4>
+                    <div id="scaleSupplement" class="bg-green-50 p-4 rounded-lg mb-6"></div>
+                </div>
+                
+                <!-- 次要人格简化卡片 -->
+                <div class="glassmorphism p-6 mb-8">
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-users text-gray-700 mr-2"></i>
+                        <span>次要人格</span>
+                    </h3>
+                    <div id="secondaryPersonalityCards" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+                
+                <div class="text-center">
+                    <button id="restartTestBtn" class="btn-primary px-6 py-3 font-medium rounded-lg shadow-md">
+                        重新测试 <i class="fas fa-redo ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 导航按钮 -->
+        <div id="navButtons" class="hidden flex justify-between">
+            <button id="prevBtn" class="btn-secondary px-6 py-2 font-medium rounded-lg">
+                <i class="fas fa-arrow-left mr-2"></i>上一题
+            </button>
+            <button id="nextBtn" class="btn-primary px-6 py-2 font-medium rounded-lg">
+                下一题<i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer class="text-center text-sm text-gray-500 mt-8">
+            <p>本测试题by禄林好汉品牌策划团队</p>
+        </footer>
+    </div>
+
+    <script>
+        // 十二人格数据
+        const personalityData = {
+            "天真者": {
+                "核心诉求": "安全、纯粹、快乐",
+                "代表特征": "乐观、信任、返璞归真",
+                "典型案例": "迪士尼、陶渊明",
+                "行业适配建议": "老字号、民生品牌、传统行业",
+                "color": "bg-blue-100",
+                "borderColor": "border-blue-500"
+            },
+            "探险家": {
+                "核心诉求": "自由、探索、突破",
+                "代表特征": "冒险、独立、追寻体验",
+                "典型案例": "红牛、贝爷（Bear Grylls）",
+                "行业适配建议": "创新型产品、户外装备、旅行服务",
+                "color": "bg-green-100",
+                "borderColor": "border-green-500"
+            },
+            "智者": {
+                "核心诉求": "真理、知识、洞察",
+                "代表特征": "理性、分析、教育者心态",
+                "典型案例": "维基百科、苏格拉底",
+                "行业适配建议": "科技、咨询、教育、专业服务",
+                "color": "bg-indigo-100",
+                "borderColor": "border-indigo-500"
+            },
+            "英雄": {
+                "核心诉求": "胜利、挑战、超越",
+                "代表特征": "勇气、毅力、解决问题",
+                "典型案例": "耐克、马斯克",
+                "行业适配建议": "运动品牌、领导力培训、励志产品",
+                "color": "bg-red-100",
+                "borderColor": "border-red-500"
+            },
+            "亡命之徒": {
+                "核心诉求": "颠覆、反抗、独特",
+                "代表特征": "叛逆、打破常规、反传统",
+                "典型案例": "维珍航空、乔布斯",
+                "行业适配建议": "潮牌、音乐、反叛文化产品",
+                "color": "bg-purple-100",
+                "borderColor": "border-purple-500"
+            },
+            "魔法师": {
+                "核心诉求": "创造、奇迹、愿景",
+                "代表特征": "创新、想象力、改变现实",
+                "典型案例": "苹果、J.K. 罗琳",
+                "行业适配建议": "创意产业、设计品牌、科技产品",
+                "color": "bg-yellow-100",
+                "borderColor": "border-yellow-500"
+            },
+            "凡夫俗子": {
+                "核心诉求": "真实、归属、平等",
+                "代表特征": "亲民、同理心、社群意识",
+                "典型案例": "可口可乐、普通人形象博主",
+                "行业适配建议": "大众消费品、社区服务、日常用品",
+                "color": "bg-gray-100",
+                "borderColor": "border-gray-500"
+            },
+            "情人": {
+                "核心诉求": "亲密、美、连接",
+                "代表特征": "浪漫、感性、注重体验",
+                "典型案例": "蒂芙尼、梁朝伟",
+                "行业适配建议": "奢侈品、美容、情感类产品",
+                "color": "bg-pink-100",
+                "borderColor": "border-pink-500"
+            },
+            "弄臣": {
+                "核心诉求": "趣味、幽默、颠覆",
+                "代表特征": "欢乐、轻松、打破严肃",
+                "典型案例": "麦当劳、喜剧演员",
+                "行业适配建议": "娱乐、游戏、休闲产品",
+                "color": "bg-orange-100",
+                "borderColor": "border-orange-500"
+            },
+            "照顾者": {
+                "核心诉求": "付出、保护、支持",
+                "代表特征": "利他、滋养、守护",
+                "典型案例": "强生、特蕾莎修女",
+                "行业适配建议": "医疗、母婴、养老服务",
+                "color": "bg-teal-100",
+                "borderColor": "border-teal-500"
+            },
+            "统治者": {
+                "核心诉求": "权威、秩序、掌控",
+                "代表特征": "领导力、决断、系统化管理",
+                "典型案例": "奔驰、拿破仑",
+                "行业适配建议": "金融、法律、权威机构",
+                "color": "bg-gray-100",
+                "borderColor": "border-gray-500"
+            },
+            "创造者": {
+                "核心诉求": "表达、独特、匠心",
+                "代表特征": "艺术感、个性化、追求卓越",
+                "典型案例": "乐高、安藤忠雄",
+                "行业适配建议": "艺术、设计、创意工作室",
+                "color": "bg-amber-100",
+                "borderColor": "border-amber-500"
+            }
+        };
+
+        // 测试数据
+        const testData = {
+            scenarioQuestions: [
+                {
+                    id: 1,
+                    question: "当面对新市场机会时，你更倾向于：",
+                    options: [
+                        { text: "深入调研后制定稳妥方案", personality: "统治者" },
+                        { text: "快速尝试并灵活调整", personality: "探险家" },
+                        { text: "联合多方资源共同推进", personality: "照顾者" },
+                        { text: "打造独特概念吸引关注", personality: "魔法师" }
+                    ],
+                    analysis: {
+                        "统治者": "追求秩序与风险控制，适合金融 / 科技行业",
+                        "探险家": "行动导向，适合创新型市场切入",
+                        "照顾者": "协作思维，适合资源整合型策略",
+                        "魔法师": "创意驱动，适合差异化竞争"
+                    }
+                },
+                {
+                    id: 2,
+                    question: "你认为品牌最应传递的价值是：",
+                    options: [
+                        { text: "安全可靠的品质保障", personality: "天真者" },
+                        { text: "突破常规的创新体验", personality: "亡命之徒" },
+                        { text: "专业权威的行业地位", personality: "统治者" },
+                        { text: "温暖贴心的情感关怀", personality: "照顾者" }
+                    ],
+                    analysis: {
+                        "天真者": "安全感诉求，适合民生品牌",
+                        "亡命之徒": "颠覆精神，适合潮牌",
+                        "统治者": "行业话语权，适合头部品牌",
+                        "照顾者": "情感关怀，适合母婴行业"
+                    }
+                },
+                {
+                    id: 3,
+                    question: "如果品牌是一个人，TA的社交风格更接近：",
+                    options: [
+                        { text: "活跃气氛的幽默达人", personality: "弄臣" },
+                        { text: "深度倾听的情感支持者", personality: "情人" },
+                        { text: "理性分析的问题解决者", personality: "智者" },
+                        { text: "引领潮流的意见领袖", personality: "英雄" }
+                    ],
+                    analysis: {
+                        "弄臣": "趣味导向，适合快消品",
+                        "情人": "情感共鸣，适合奢侈品",
+                        "智者": "逻辑导向，适合咨询行业",
+                        "英雄": "榜样力量，适合运动品牌"
+                    }
+                },
+                {
+                    id: 4,
+                    question: "在危机公关中，你会优先选择：",
+                    options: [
+                        { text: "公开透明的道歉与补偿", personality: "照顾者" },
+                        { text: "用创意内容转移公众注意力", personality: "弄臣" },
+                        { text: "强调品牌历史与专业背书", personality: "统治者" },
+                        { text: "发起用户共创的解决方案", personality: "凡夫俗子" }
+                    ],
+                    analysis: {
+                        "照顾者": "责任导向，适合医疗品牌",
+                        "弄臣": "趣味化解，适合娱乐品牌",
+                        "统治者": "权威背书，适合老字号",
+                        "凡夫俗子": "用户参与，适合互联网品牌"
+                    }
+                },
+                {
+                    id: 5,
+                    question: "品牌最吸引你的产品设计特点是：",
+                    options: [
+                        { text: "简约经典的永恒设计", personality: "天真者" },
+                        { text: "颠覆传统的先锋造型", personality: "亡命之徒" },
+                        { text: "极致细节的匠心工艺", personality: "创造者" },
+                        { text: "情感共鸣的故事内涵", personality: "情人" }
+                    ],
+                    analysis: {
+                        "创造者": "工艺导向，适合高端制造",
+                        "情人": "故事驱动，适合文化 IP"
+                    }
+                },
+                {
+                    id: 6,
+                    question: "当团队意见分歧时，你更倾向：",
+                    options: [
+                        { text: "投票决策，遵循多数人意见", personality: "凡夫俗子" },
+                        { text: "坚持己见，用数据说服他人", personality: "智者" },
+                        { text: "协调折中，维护团队和谐", personality: "照顾者" },
+                        { text: "打破僵局，提出全新思路", personality: "魔法师" }
+                    ],
+                    analysis: {
+                        "凡夫俗子": "社群共识，适合 UGC 平台",
+                        "智者": "数据驱动，适合科技团队"
+                    }
+                },
+                {
+                    id: 7,
+                    question: "品牌的理想用户画像更接近：",
+                    options: [
+                        { text: "追求稳定的保守派", personality: "天真者" },
+                        { text: "渴望突破的冒险派", personality: "探险家" },
+                        { text: "注重品质的精英派", personality: "统治者" },
+                        { text: "崇尚个性的自由派", personality: "亡命之徒" }
+                    ],
+                    analysis: {
+                        "亡命之徒": "个性导向，适合潮玩品牌",
+                        "统治者": "品质导向，适合奢侈品"
+                    }
+                },
+                {
+                    id: 8,
+                    question: "你如何看待行业规则：",
+                    options: [
+                        { text: "严格遵守，确保合规", personality: "统治者" },
+                        { text: "灵活运用，适度创新", personality: "探险家" },
+                        { text: "质疑批判，寻求突破", personality: "亡命之徒" },
+                        { text: "无关紧要，专注用户需求", personality: "凡夫俗子" }
+                    ],
+                    analysis: {
+                        "探险家": "规则变通，适合互联网行业",
+                        "凡夫俗子": "用户优先，适合服务行业"
+                    }
+                },
+                {
+                    id: 9,
+                    question: "品牌传播中，你更重视：",
+                    options: [
+                        { text: "情感共鸣的故事讲述", personality: "情人" },
+                        { text: "理性专业的功能解析", personality: "智者" },
+                        { text: "视觉冲击的创意表达", personality: "魔法师" },
+                        { text: "口碑积累的用户证言", personality: "天真者" }
+                    ],
+                    analysis: {
+                        "魔法师": "视觉创新，适合时尚品牌",
+                        "智者": "功能导向，适合 3C 产品"
+                    }
+                },
+                {
+                    id: 10,
+                    question: "面对竞争对手的模仿，你会：",
+                    options: [
+                        { text: "加强专利保护，巩固壁垒", personality: "统治者" },
+                        { text: "推出差异化产品，重新定义市场", personality: "魔法师" },
+                        { text: "发起价格战，抢占份额", personality: "英雄" },
+                        { text: "联合用户发起抵制行动", personality: "亡命之徒" }
+                    ],
+                    analysis: {
+                        "英雄": "竞争导向，适合快消行业",
+                        "亡命之徒": "用户联盟，适合小众品牌"
+                    }
+                },
+                {
+                    id: 11,
+                    question: "品牌的社会责任行动应聚焦：",
+                    options: [
+                        { text: "环保公益，守护地球", personality: "照顾者" },
+                        { text: "教育扶持，赋能未来", personality: "智者" },
+                        { text: "文化传承，守护传统", personality: "天真者" },
+                        { text: "科技创新，推动进步", personality: "创造者" }
+                    ],
+                    analysis: {
+                        "创造者": "科技向善，适合高新企业",
+                        "智者": "教育赋能，适合知识付费"
+                    }
+                },
+                {
+                    id: 12,
+                    question: "当产品出现缺陷时，你的第一反应是：",
+                    options: [
+                        { text: "立即召回并赔偿用户", personality: "照顾者" },
+                        { text: "公开问题并承诺改进", personality: "统治者" },
+                        { text: "用幽默文案化解危机", personality: "弄臣" },
+                        { text: "发起用户共创解决方案", personality: "凡夫俗子" }
+                    ],
+                    analysis: {
+                        "弄臣": "幽默化解，适合年轻化品牌",
+                        "凡夫俗子": "用户参与，适合互联网产品"
+                    }
+                },
+                {
+                    id: 13,
+                    question: "品牌的理想合作对象是：",
+                    options: [
+                        { text: "行业巨头，提升权威性", personality: "统治者" },
+                        { text: "跨界艺术家，激发创意", personality: "魔法师" },
+                        { text: "公益组织，传递爱心", personality: "照顾者" },
+                        { text: "年轻网红，扩大影响力", personality: "弄臣" }
+                    ],
+                    analysis: {
+                        "魔法师": "艺术跨界，适合潮牌",
+                        "弄臣": "流量导向，适合快消品"
+                    }
+                },
+                {
+                    id: 14,
+                    question: "你如何定义品牌的成功：",
+                    options: [
+                        { text: "市场份额与利润增长", personality: "统治者" },
+                        { text: "用户忠诚度与情感连接", personality: "情人" },
+                        { text: "行业创新与技术突破", personality: "创造者" },
+                        { text: "社会价值与文化贡献", personality: "智者" }
+                    ],
+                    analysis: {
+                        "创造者": "技术驱动，适合科技企业",
+                        "智者": "社会价值，适合公益品牌"
+                    }
+                },
+                {
+                    id: 15,
+                    question: "品牌的理想代言人应具备：",
+                    options: [
+                        { text: "专业权威形象", personality: "统治者" },
+                        { text: "亲和力与温暖感", personality: "照顾者" },
+                        { text: "叛逆不羁气质", personality: "亡命之徒" },
+                        { text: "艺术创造力", personality: "创造者" }
+                    ],
+                    analysis: {
+                        "亡命之徒": "叛逆形象，适合潮牌",
+                        "创造者": "艺术气质，适合设计品牌"
+                    }
+                },
+                {
+                    id: 16,
+                    question: "在品牌视觉设计中，你更注重：",
+                    options: [
+                        { text: "经典配色与稳重构图", personality: "天真者" },
+                        { text: "强烈对比与动态元素", personality: "刺激型" },
+                        { text: "自然元素与柔和线条", personality: "照顾者" },
+                        { text: "科技感与未来主义", personality: "创造者" }
+                    ],
+                    analysis: {
+                        "创造者": "科技视觉，适合新能源品牌",
+                        "照顾者": "自然风格，适合有机品牌"
+                    }
+                },
+                {
+                    id: 17,
+                    question: "当用户提出无理要求时，你会：",
+                    options: [
+                        { text: "礼貌拒绝并解释规则", personality: "统治者" },
+                        { text: "灵活变通，尽力满足", personality: "照顾者" },
+                        { text: "幽默回应，化解尴尬", personality: "弄臣" },
+                        { text: "引导用户参与共创", personality: "凡夫俗子" }
+                    ],
+                    analysis: {
+                        "凡夫俗子": "用户共创，适合 UGC 平台",
+                        "弄臣": "幽默回应，适合年轻化品牌"
+                    }
+                },
+                {
+                    id: 18,
+                    question: "品牌的理想线下体验店应：",
+                    options: [
+                        { text: "提供标准化服务", personality: "统治者" },
+                        { text: "打造沉浸式主题空间", personality: "魔法师" },
+                        { text: "营造家一般的温馨感", personality: "照顾者" },
+                        { text: "强调互动与体验", personality: "探险家" }
+                    ],
+                    analysis: {
+                        "魔法师": "沉浸体验，适合文旅品牌",
+                        "探险家": "互动导向，适合体验馆"
+                    }
+                },
+                {
+                    id: 19,
+                    question: "你如何看待品牌的长期发展：",
+                    options: [
+                        { text: "稳步扩张，建立行业壁垒", personality: "统治者" },
+                        { text: "不断创新，保持新鲜感", personality: "探险家" },
+                        { text: "深耕细分市场，成为专家", personality: "智者" },
+                        { text: "构建社群，增强归属感", personality: "凡夫俗子" }
+                    ],
+                    analysis: {
+                        "智者": "垂直深耕，适合细分领域品牌",
+                        "凡夫俗子": "社群运营，适合社交平台"
+                    }
+                },
+                {
+                    id: 20,
+                    question: "品牌最应避免的形象是：",
+                    options: [
+                        { text: "平庸无趣", personality: "天真者 / 凡夫俗子" },
+                        { text: "过度商业化", personality: "照顾者 / 情人" },
+                        { text: "缺乏专业性", personality: "统治者 / 智者" },
+                        { text: "固步自封", personality: "探险家 / 魔法师" }
+                    ],
+                    analysis: {
+                        "探险家 / 魔法师": "需避免保守，适合持续创新行业",
+                        "统治者 / 智者": "需强化专业背书"
+                    }
+                }
+            ],
+            likertQuestions: [
+                {
+                    id: 21,
+                    question: "我 / 品牌注重传承经典，避免过度创新。",
+                    dimension: "天真者",
+                    scoreAnalysis: {
+                        "1-2": "倾向创新（探险家 / 魔法师）",
+                        "3": "平衡传统与创新",
+                        "4-5": "典型天真者，适合老字号品牌"
+                    }
+                },
+                {
+                    id: 22,
+                    question: "我 / 品牌善于通过幽默化解矛盾。",
+                    dimension: "弄臣",
+                    scoreAnalysis: {
+                        "1-2": "理性解决问题（智者 / 统治者）",
+                        "4-5": "弄臣特质，适合娱乐品牌"
+                    }
+                },
+                {
+                    id: 23,
+                    question: "我 / 品牌在决策时优先考虑逻辑与数据。",
+                    dimension: "智者",
+                    scoreAnalysis: {
+                        "1-2": "情感驱动（情人 / 照顾者）",
+                        "4-5": "智者特质，适合科技咨询行业"
+                    }
+                },
+                {
+                    id: 24,
+                    question: "我 / 品牌愿意为用户提供超出预期的服务。",
+                    dimension: "照顾者",
+                    scoreAnalysis: {
+                        "4-5": "强烈照顾者倾向，适合服务业（如海底捞）"
+                    }
+                },
+                {
+                    id: 25,
+                    question: "我 / 品牌追求打破常规，挑战权威。",
+                    dimension: "探险家",
+                    scoreAnalysis: {
+                        "4-5": "探险家 / 亡命之徒倾向，适合颠覆型品牌"
+                    }
+                },
+                {
+                    id: 26,
+                    question: "我 / 品牌重视与用户建立深厚的情感连接。",
+                    dimension: "情人",
+                    scoreAnalysis: {
+                        "4-5": "情人特质，适合奢侈品 / 情感类品牌"
+                    }
+                },
+                {
+                    id: 27,
+                    question: "我 / 品牌在行业中扮演领导者角色。",
+                    dimension: "统治者 / 英雄",
+                    scoreAnalysis: {
+                        "4-5": "统治者或英雄倾向，适合头部品牌"
+                    }
+                },
+                {
+                    id: 28,
+                    question: "我 / 品牌擅长将抽象概念转化为现实产品。",
+                    dimension: "魔法师 / 创造者",
+                    scoreAnalysis: {
+                        "4-5": "创新转化能力强，适合科技 / 设计品牌"
+                    }
+                },
+                {
+                    id: 29,
+                    question: "我 / 品牌更关注产品的实用性而非情感价值。",
+                    dimension: "智者 / 创造者",
+                    scoreAnalysis: {
+                        "4-5": "理性导向，适合 3C 产品 / 工具类品牌"
+                    }
+                },
+                {
+                    id: 30,
+                    question: "我 / 品牌认为规则是用来被突破的。",
+                    dimension: "亡命之徒",
+                    scoreAnalysis: {
+                        "4-5": "强烈亡命之徒倾向，适合潮牌 / 反叛型品牌"
+                    }
+                }
+            ]
+        };
+
+        // 测试状态
+        let testState = {
+            currentStage: 0, // 0: 欢迎, 1: 场景题, 2: 李克特题, 3: 结果
+            currentQuestionIndex: 0,
+            answers: {},
+            personalityScores: {},
+            scenarioScores: {}
+        };
+
+        // DOM元素
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const scenarioQuestion = document.getElementById('scenarioQuestion');
+        const likertQuestion = document.getElementById('likertQuestion');
+        const resultContainer = document.getElementById('resultContainer');
+        const navButtons = document.getElementById('navButtons');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const startTestBtn = document.getElementById('startTestBtn');
+        const restartTestBtn = document.getElementById('restartTestBtn');
+        const progressText = document.getElementById('progressText');
+        const progressBar = document.getElementById('progressBar');
+        const currentStage = document.getElementById('currentStage');
+        const topPersonalities = document.getElementById('topPersonalities');
+        const topScalePersonalities = document.getElementById('topScalePersonalities');
+        const primaryPersonalityCard = document.getElementById('primaryPersonalityCard');
+        const secondaryPersonalityCards = document.getElementById('secondaryPersonalityCards');
+        const scaleSupplement = document.getElementById('scaleSupplement');
+
+        // 初始化测试
+        function initTest() {
+            startTestBtn.addEventListener('click', startTest);
+            restartTestBtn.addEventListener('click', restartTest);
+            prevBtn.addEventListener('click', showPreviousQuestion);
+            nextBtn.addEventListener('click', showNextQuestion);
+        }
+
+        // 开始测试
+        function startTest() {
+            testState.currentStage = 1;
+            testState.currentQuestionIndex = 0;
+            testState.answers = {};
+            testState.personalityScores = {};
+            testState.scenarioScores = {};
+            
+            welcomeScreen.classList.add('hidden');
+            scenarioQuestion.classList.remove('hidden');
+            navButtons.classList.remove('hidden');
+            
+            updateStageIndicator();
+            showQuestion();
+        }
+
+        // 重新测试
+        function restartTest() {
+            resultContainer.classList.add('hidden');
+            welcomeScreen.classList.remove('hidden');
+            testState = {
+                currentStage: 0,
+                currentQuestionIndex: 0,
+                answers: {},
+                personalityScores: {},
+                scenarioScores: {}
+            };
+            updateProgress();
+        }
+
+        // 更新阶段指示器
+        function updateStageIndicator() {
+            if (testState.currentStage === 1) {
+                currentStage.textContent = "阶段1：场景选择题";
+            } else if (testState.currentStage === 2) {
+                currentStage.textContent = "阶段2：李克特量表题";
+            }
+        }
+
+        // 显示问题
+        function showQuestion() {
+            updateProgress();
+            
+            if (testState.currentStage === 1) {
+                showScenarioQuestion();
+            } else if (testState.currentStage === 2) {
+                showLikertQuestion();
+            }
+            
+            // 更新导航按钮状态
+            prevBtn.disabled = testState.currentQuestionIndex === 0;
+            
+            if (testState.currentStage === 1 && testState.currentQuestionIndex === testData.scenarioQuestions.length - 1) {
+                nextBtn.textContent = "进入阶段2";
+            } else if (testState.currentStage === 2 && testState.currentQuestionIndex === testData.likertQuestions.length - 1) {
+                nextBtn.textContent = "查看结果";
+            } else {
+                nextBtn.textContent = "下一题";
+            }
+        }
+
+        // 显示场景选择题
+        function showScenarioQuestion() {
+            const question = testData.scenarioQuestions[testState.currentQuestionIndex];
+            document.getElementById('scenarioQuestionText').textContent = `${question.id}. ${question.question}`;
+            
+            const optionsContainer = document.getElementById('scenarioOptions');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('button');
+                const isSelected = testState.answers[question.id] === index;
+                
+                optionElement.className = `w-full p-4 text-left rounded-lg transition-all ${isSelected ? 'option-selected' : 'option-unselected'}`;
+                
+                optionElement.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 rounded-full border-2 ${isSelected ? 'border-green-500' : 'border-gray-300'} mr-3 flex items-center justify-center">
+                            ${isSelected ? '<div class="w-3 h-3 rounded-full bg-green-500"></div>' : ''}
+                        </div>
+                        <span>${option.text}</span>
+                    </div>
+                `;
+                
+                optionElement.addEventListener('click', () => {
+                    testState.answers[question.id] = index;
+                    
+                    // 显示答案解析
+                    const analysisContainer = document.getElementById('scenarioAnalysis');
+                    const analysisText = document.getElementById('analysisText');
+                    
+                    let analysisContent = "";
+                    const personalities = option.personality.split(' / ');
+                    personalities.forEach(personality => {
+                        analysisContent += `<strong>${personality}：</strong>${question.analysis[personality]}<br>`;
+                    });
+                    
+                    analysisText.innerHTML = analysisContent;
+                    analysisContainer.classList.remove('hidden');
+                    
+                    showQuestion();
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // 重置答案解析显示
+            document.getElementById('scenarioAnalysis').classList.add('hidden');
+        }
+
+        // 显示李克特量表题
+        function showLikertQuestion() {
+            const question = testData.likertQuestions[testState.currentQuestionIndex];
+            document.getElementById('likertQuestionText').textContent = `${question.id}. ${question.question}`;
+            document.getElementById('likertDimension').innerHTML = `<strong>原型维度：</strong>${question.dimension}`;
+            
+            // 显示分数解析
+            let analysisText = '';
+            for (const [range, text] of Object.entries(question.scoreAnalysis)) {
+                analysisText += `${range}分：${text}<br>`;
+            }
+            document.getElementById('scoreAnalysisText').innerHTML = analysisText;
+            
+            // 显示选项
+            const optionsContainer = document.getElementById('likertOptions');
+            optionsContainer.innerHTML = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                const optionElement = document.createElement('div');
+                optionElement.className = `scale-option p-3 text-center rounded-lg cursor-pointer ${testState.answers[question.id] === i ? 'selected' : 'bg-white'}`;
+                optionElement.textContent = i;
+                
+                optionElement.addEventListener('click', () => {
+                    testState.answers[question.id] = i;
+                    document.getElementById('likertScoreAnalysis').classList.remove('hidden');
+                    showQuestion();
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            }
+            
+            // 重置分数解析显示
+            if (testState.answers[question.id] !== undefined) {
+                document.getElementById('likertScoreAnalysis').classList.remove('hidden');
+            } else {
+                document.getElementById('likertScoreAnalysis').classList.add('hidden');
+            }
+        }
+
+        // 显示上一题
+        function showPreviousQuestion() {
+            if (testState.currentQuestionIndex > 0) {
+                testState.currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+
+        // 显示下一题
+        function showNextQuestion() {
+            // 检查当前问题是否已回答
+            const currentQuestionId = testState.currentStage === 1 ? 
+                testData.scenarioQuestions[testState.currentQuestionIndex].id : 
+                testData.likertQuestions[testState.currentQuestionIndex].id;
+                
+            if (testState.answers[currentQuestionId] === undefined) {
+                alert('请先回答当前问题');
+                return;
+            }
+            
+            // 检查是否需要切换阶段
+            if (testState.currentStage === 1 && testState.currentQuestionIndex === testData.scenarioQuestions.length - 1) {
+                testState.currentStage = 2;
+                testState.currentQuestionIndex = 0;
+                scenarioQuestion.classList.add('hidden');
+                likertQuestion.classList.remove('hidden');
+                updateStageIndicator();
+                showQuestion();
+                return;
+            }
+            
+            // 检查是否显示结果
+            if (testState.currentStage === 2 && testState.currentQuestionIndex === testData.likertQuestions.length - 1) {
+                showResults();
+                return;
+            }
+            
+            // 否则显示下一题
+            testState.currentQuestionIndex++;
+            showQuestion();
+        }
+
+        // 显示结果
+        function showResults() {
+            // 计算人格得分
+            calculatePersonalityScores();
+            
+            // 隐藏问题区域，显示结果区域
+            likertQuestion.classList.add('hidden');
+            navButtons.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+            
+            // 显示主导人格TOP3（选择题部分）
+            displayTopPersonalities();
+            
+            // 显示量表高分人格TOP3
+            displayTopScalePersonalities();
+            
+            // 显示主要人格详细卡片
+            displayPrimaryPersonalityCard();
+            
+            // 显示次要人格简化卡片
+            displaySecondaryPersonalityCards();
+            
+            // 显示量表补充描述
+            displayScaleSupplement();
+        }
+
+        // 计算人格得分
+        function calculatePersonalityScores() {
+            // 初始化所有人格分数为0
+            const allPersonalities = [
+                "天真者", "探险家", "智者", "英雄", "亡命之徒", 
+                "魔法师", "凡夫俗子", "情人", "弄臣", "照顾者", "统治者", "创造者"
+            ];
+            
+            allPersonalities.forEach(personality => {
+                testState.personalityScores[personality] = 0;
+                testState.scenarioScores[personality] = 0;
+            });
+            
+            // 计算场景选择题得分
+            testData.scenarioQuestions.forEach(question => {
+                const answerIndex = testState.answers[question.id];
+                if (answerIndex !== undefined) {
+                    const selectedOption = question.options[answerIndex];
+                    const personalities = selectedOption.personality.split(' / ');
+                    personalities.forEach(personality => {
+                        testState.scenarioScores[personality] += 1;
+                    });
+                }
+            });
+            
+            // 计算李克特量表题得分
+            testData.likertQuestions.forEach(question => {
+                const score = testState.answers[question.id];
+                if (score !== undefined) {
+                    const personalities = question.dimension.split(' / ');
+                    personalities.forEach(personality => {
+                        testState.personalityScores[personality] += score;
+                    });
+                }
+            });
+        }
+
+        // 显示主导人格TOP3（选择题部分）
+        function displayTopPersonalities() {
+            // 获取选择题部分得分TOP3的人格
+            const sortedPersonalities = Object.entries(testState.scenarioScores)
+               .sort((a, b) => b[1] - a[1])
+               .slice(0, 3);
+            
+            topPersonalities.innerHTML = '';
+            
+            sortedPersonalities.forEach(([personality, score], index) => {
+                const data = personalityData[personality];
+                const medalColors = ['medal-gold', 'medal-silver', 'medal-bronze'];
+                const medalIcons = ['fa-crown', 'fa-medal', 'fa-award'];
+                
+                topPersonalities.innerHTML += `
+                    <div class="personality-card bg-white p-4 rounded-lg shadow-sm ${data.borderColor}">
+                        <div class="flex items-center mb-2">
+                            <i class="fas ${medalIcons[index]} ${medalColors[index]} mr-2 text-xl"></i>
+                            <h4 class="font-semibold">${personality}</h4>
+                        </div>
+                        <div class="text-sm text-gray-700 mb-1">被选次数: ${score}</div>
+                        <div class="text-xs text-gray-600">核心诉求: ${data.核心诉求}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // 显示量表高分人格TOP3
+        function displayTopScalePersonalities() {
+            // 获取量表部分得分TOP3的人格
+            const sortedPersonalities = Object.entries(testState.personalityScores)
+               .sort((a, b) => b[1] - a[1])
+               .slice(0, 3);
+            
+            topScalePersonalities.innerHTML = '';
+            
+            sortedPersonalities.forEach(([personality, score], index) => {
+                const data = personalityData[personality];
+                const starColors = ['text-yellow-500', 'text-gray-400', 'text-amber-600'];
+                
+                topScalePersonalities.innerHTML += `
+                    <div class="personality-card bg-white p-4 rounded-lg shadow-sm ${data.borderColor}">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-star ${starColors[index]} mr-2"></i>
+                            <h4 class="font-semibold">${personality}</h4>
+                        </div>
+                        <div class="text-sm text-gray-700 mb-1">量表得分: ${score}</div>
+                        <div class="text-xs text-gray-600">代表特征: ${data.代表特征}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // 显示主要人格详细卡片
+        function displayPrimaryPersonalityCard() {
+            // 获取主要人格（选择题部分得分最高的人格）
+            let maxScore = 0;
+            let primaryPersonality = "";
+            
+            for (const [personality, score] of Object.entries(testState.scenarioScores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    primaryPersonality = personality;
+                }
+            }
+            
+            const data = personalityData[primaryPersonality];
+            
+            primaryPersonalityCard.innerHTML = `
+                <div class="flex items-center mb-4">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-300 to-green-300 flex items-center justify-center text-3xl mr-4">
+                        <i class="fas fa-user-tie text-gray-800"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">${primaryPersonality}</h3>
+                        <p class="text-sm text-gray-600">${data.核心诉求}</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="bg-yellow-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-gray-700 mb-1">代表特征</h4>
+                        <p class="text-sm">${data.代表特征}</p>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-gray-700 mb-1">典型案例</h4>
+                        <p class="text-sm">${data.典型案例}</p>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <h4 class="font-semibold text-gray-700 mb-1">行业适配建议</h4>
+                    <p class="text-sm">${data.行业适配建议}</p>
+                </div>
+            `;
+        }
+
+        // 显示次要人格简化卡片
+        function displaySecondaryPersonalityCards() {
+            // 获取除主要人格外的其他人格（按选择题部分得分排序）
+            const sortedPersonalities = Object.entries(testState.scenarioScores)
+               .sort((a, b) => b[1] - a[1])
+               .slice(1, 5); // 取第2-5名
+            
+            secondaryPersonalityCards.innerHTML = '';
+            
+            sortedPersonalities.forEach(([personality, score]) => {
+                const data = personalityData[personality];
+                
+                secondaryPersonalityCards.innerHTML += `
+                    <div class="personality-card bg-white p-4 rounded-lg shadow-sm ${data.borderColor}">
+                        <h4 class="font-semibold mb-2 text-gray-800">${personality}</h4>
+                        <div class="text-sm text-gray-700 mb-1">核心诉求: ${data.核心诉求}</div>
+                        <div class="text-sm text-gray-700">典型案例: ${data.典型案例}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // 显示量表补充描述
+        function displayScaleSupplement() {
+            // 获取主要人格
+            let maxScore = 0;
+            let primaryPersonality = "";
+            
+            for (const [personality, score] of Object.entries(testState.scenarioScores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    primaryPersonality = personality;
+                }
+            }
+            
+            // 查找与主要人格相关的量表题目
+            let supplementText = "";
+            
+            testData.likertQuestions.forEach(question => {
+                const personalities = question.dimension.split(' / ');
+                if (personalities.includes(primaryPersonality)) {
+                    const score = testState.answers[question.id];
+                    if (score !== undefined) {
+                        supplementText += `<p class="mb-3"><strong class="text-green-600">${question.question}</strong><br>`;
+                        supplementText += `<span class="text-sm">您的评分: <span class="font-bold">${score}分</span> - `;
+                        
+                        // 查找对应的分数段解析
+                        for (const [range, text] of Object.entries(question.scoreAnalysis)) {
+                            if (range.includes('-')) {
+                                const [min, max] = range.split('-').map(Number);
+                                if (score >= min && score <= max) {
+                                    supplementText += text;
+                                }
+                            } else if (Number(range) === score) {
+                                supplementText += text;
+                            }
+                        }
+                        
+                        supplementText += `</span></p>`;
+                    }
+                }
+            });
+            
+            scaleSupplement.innerHTML = supplementText || "<p class='text-gray-600'>暂无相关的量表补充描述</p>";
+        }
+
+        // 获取人格描述
+        function getPersonalityDescription(personality) {
+            const descriptions = {
+                "天真者": "追求简单、纯真和快乐，相信世界是美好的，适合传递安全感和信任感的品牌。",
+                "探险家": "渴望自由和冒险，喜欢探索新事物，适合创新和突破传统的品牌。",
+                "智者": "理性、智慧和客观，追求真理和知识，适合专业和技术导向的品牌。",
+                "英雄": "勇敢、有决心和竞争力，致力于改变世界，适合有抱负和领导力的品牌。",
+                "亡命之徒": "叛逆、自由和反传统，挑战现状和规则，适合颠覆性和反叛精神的品牌。",
+                "魔法师": "富有想象力和创造力，能够将梦想变为现实，适合创新和变革的品牌。",
+                "凡夫俗子": "真实、普通和接地气，强调归属感和社群，适合大众化和亲民的品牌。",
+                "情人": "感性、热情和亲密，追求关系和美感，适合情感和美学导向的品牌。",
+                "弄臣": "幽默、玩乐和享受当下，喜欢逗乐他人，适合娱乐和轻松的品牌。",
+                "照顾者": "关怀、慷慨和保护，乐于帮助他人，适合服务和关怀导向的品牌。",
+                "统治者": "权威、控制和责任，追求秩序和领导，适合专业和权威的品牌。",
+                "创造者": "创新、想象力和自我表达，喜欢创造新事物，适合设计和艺术导向的品牌。"
+            };
+            
+            return descriptions[personality] || "该人格类型暂无详细描述。";
+        }
+
+        // 更新进度
+        function updateProgress() {
+            let currentQuestionNumber, totalQuestions;
+            
+            if (testState.currentStage === 1) {
+                currentQuestionNumber = testState.currentQuestionIndex + 1;
+                totalQuestions = testData.scenarioQuestions.length;
+            } else if (testState.currentStage === 2) {
+                currentQuestionNumber = testState.currentQuestionIndex + 1 + testData.scenarioQuestions.length;
+                totalQuestions = testData.scenarioQuestions.length + testData.likertQuestions.length;
+            } else {
+                return;
+            }
+            
+            progressText.textContent = `${currentQuestionNumber}/${totalQuestions}`;
+            progressBar.style.width = `${(currentQuestionNumber / totalQuestions) * 100}%`;
+        }
+
+        // 初始化测试
+        initTest();
+    </script>
+</body>
+</html>
